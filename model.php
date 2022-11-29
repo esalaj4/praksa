@@ -1,10 +1,8 @@
 <?php
 include("connection.php");
-class Model {
-
-   
-    private array $attributes = [];
-    protected array $allowed = ['red','blue'];
+class Model {   
+    protected array $attributes = [];
+    protected array $allowed = [ ];
     protected $table;
     private $connection;
 
@@ -14,13 +12,12 @@ class Model {
     }
     public function __set($name, $value) 
     {
-        echo "Setting '$name' to '$value'\n"; 
-        $this->attributes[$name] = $value;
-       /*  if((in_array($name,$this->allowed) || empty($this->allowed)) ){
-            $query = "ALTER TABLE models ADD $name VARCHAR(50) AFTER id";
-            $stmt = $this->connection->dbh->prepare($query);
-            $stmt->execute();}   */
- 
+        if(in_array($name,$this->allowed))
+          {  echo "Allowed, Setting '$name' to '$value'\n"; 
+            $this->attributes[$name] = $value;}
+        else{
+            echo "Not allowed";
+        }     
     }
 
     public function __get($name) 
@@ -68,68 +65,88 @@ class Model {
         return call_user_func('get_object_vars', $this);
     }
 
-    public function store(){
-        var_dump($this);
-        foreach($this->attributes as $key=>$key_value)
-        {
-            echo "Key=" .$key . "Value=" .$key_value;
-            echo "<br>";
-            $query = "INSERT INTO models($key) VALUES($key_value)";
-            $stmt = $this->connection->dbh->prepare($query);
-            $stmt->execute();
-        }
+    public function save(){
+        $name='users';
+        $sql = sprintf(
+            'INSERT INTO users (%s) VALUES ("%s")',
+            implode(',',array_keys($this->attributes)),
+            implode('","',array_values($this->attributes))
+        );
+        $stmt = $this->connection->dbh->prepare($sql);
+        $stmt->execute();
 
-        
     }
 
     public function all()
     {
-        $query = "SELECT * FROM models";
-        $stmt = $this->connection->dbh->prepare($query);
-        $stmt->execute();
-        $models = $stmt ->fetchAll();
-        foreach($models as $model)
-        {
-            echo "ID:'$model[id]': '$model[attributes]' \n";
+        $query = "SELECT * FROM users";
+        $keys = array_keys($this->attributes);
+
+        try { 
+            $stmt = $this->connection->dbh->prepare($query);
+            $stmt->execute();
+            $r = $stmt->setFetchMode(PDO::FETCH_ASSOC);
+            $result = $stmt->fetchAll();
+           //print_r($result);
+            foreach ($result as $row) 
+            {
+                echo "NAME " . $row[$keys[0]]. " - SURNAME: " . 
+                $row[$keys[1]]. "<br>";
+            }
+        }
+        catch(PDOException $e) {
+            echo "Error: " . $e->getMessage();
         }
     }
 
     public function filterById($id){
-        $query = "SELECT * FROM models WHERE id='$id'";
-        $stmt = $this->connection->dbh->prepare($query);
-        $stmt->execute();
-        $models = $stmt ->fetchAll();
-        foreach($models as $model)
-        {
-            echo "ID:'$model[id]': '$model[attributes]' \n";
+        $query = "SELECT * FROM users WHERE id=$id";
+        $keys = array_keys($this->attributes);
+
+        try { 
+            $stmt = $this->connection->dbh->prepare($query);
+            $stmt->execute();
+            $r = $stmt->setFetchMode(PDO::FETCH_ASSOC);
+            $result = $stmt->fetchAll();
+           // print_r($result);
+            foreach ($result as $row) 
+            {
+                echo "NAME " . $row[$keys[0]]. " - SURNAME: " . 
+                $row[$keys[1]]. "<br>";
+            }
+        }
+        catch(PDOException $e) {
+            echo "Error: " . $e->getMessage();
         }
     }
 
     public function delete($id)
     {
-        $query = "DELETE FROM models WHERE id='$id'";
+        $query = "DELETE FROM users WHERE id='$id'";
         $stmt = $this->connection->dbh->prepare($query);
         $stmt->execute();
     }
 
-    public static function filterByProperty($property,$connection)
+    public function filterByProperty($property)
     {
-        $query = "SELECT * FROM models WHERE attributes LIKE '%$property%'";
-        $stmt = $connection->dbh->prepare($query);
-        $stmt->execute();
-        $models = $stmt ->fetchAll();
-        foreach($models as $model)
-        {
-            echo "ID:'$model[id]': '$model[attributes]' \n";
+        $query = "SELECT * FROM users";
+        $keys = array_keys($this->attributes);
+
+        try { 
+            $stmt = $this->connection->dbh->prepare($query);
+            $stmt->execute();
+            $r = $stmt->setFetchMode(PDO::FETCH_ASSOC);
+            $result = $stmt->fetchAll();
+            $filtered = array_column($result,$property);
+            print_r($filtered);
+
         }
+        catch(PDOException $e) {
+            echo "Error: " . $e->getMessage();
+        }
+      
     }
 }   
- 
-$obj = new Model($connection);
-$obj->surname='salaj';
-$obj->store();
-//var_dump($obj);
-
-
 
 ?>
+
