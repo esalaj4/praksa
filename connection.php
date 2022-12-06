@@ -6,21 +6,26 @@ class Connection
     private $database = "praksa";
     private $username = "ena";
     private $password = "password";
+    private static $instance = null;
 
-
-    public function __construct() {
-        
-        $options = array (PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION);
-        
+    private function __construct()
+    {    
         try {
             $this->dbh =  new PDO("mysql:host=$this->host;dbname=$this->database",$this->username,$this->password);
-            echo "connected";
         }
         catch (PDOException $pe) {
             die("Couldn't connect to db" . $pe->getMessage());
         }
     }
+
+    public static function getInstance() 
+    {
+        if(self::$instance == null) {
+            self::$instance = new Connection();
+        }
+        
+        return self::$instance;
+    }
 }
 
-$connection = new connection();
-?>
+
