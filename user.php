@@ -11,14 +11,13 @@ class User extends Model{
     } 
 }
 
-$user1 = new user();
+
 $user2=new user();
 $user3 = new user();
 $user4=new user();
 $user5=new user();
 
-$user1->name="toni";
-$user1->surname="saljj";
+
 $user2->name="ena";
 $user2->surname="salaj";
 $user3->name="name3";
@@ -28,7 +27,7 @@ $user4->surname="surname4";
 $user5->name="name5";
 $user5->surname="surname5";
 
-$user1->save();
+$user2->save();
 /* echo '<pre>';
 print_r(User::all());
 echo '<pre>';  
