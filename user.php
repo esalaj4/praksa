@@ -11,27 +11,32 @@ class User extends Model{
     } 
 }
 
-
+$user1 = new user();
 $user2=new user();
 $user3 = new user();
 $user4=new user();
-$user5=new user();
 
-
-$user2->name="ena";
-$user2->surname="salaj";
+$user1->name="name1";
+$user1->surname="surname1";
+$user2->name="name2";
+$user2->surname="surname2";
 $user3->name="name3";
 $user3->surname="surname3";
 $user4->name="name4";
 $user4->surname="surname4";
-$user5->name="name5";
-$user5->surname="surname5";
+$users = [$user1, $user2, $user3, $user4];
 
-$user2->save();
-/* echo '<pre>';
-print_r(User::all());
-echo '<pre>';  
- */
-//$user3->delete();
+foreach($users as $user)
+{
+    $user->save();
+}
 
+$allUsers = User::all();
+echo '<pre>';
+print_r($allUsers);
+echo '<pre>';
 
+$user = User::filterById(28);
+$user->name = "updatedName";
+$user->save(); //update
+$user->delete();
