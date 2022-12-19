@@ -5,7 +5,6 @@ namespace App\Src;
 class Router
 {
     protected array $routes = [];
-
     public Response $response;
     public Request $request;
 
@@ -35,7 +34,7 @@ class Router
             return $this->renderView("_404");
         }
 
-        if(is_string($callback)){
+        if(is_string($callback)) {
             return $this->renderView($callback);
         }
 
@@ -57,7 +56,6 @@ class Router
     {
         $layoutContent = $this->layoutContent();
         return str_replace('{{content}}', $viewContent, $layoutContent);  
-        
     }
 
     protected function layoutContent() 
