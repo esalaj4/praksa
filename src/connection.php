@@ -14,7 +14,7 @@ class Connection
     private function __construct()
     {    
         try {
-            $this->dbh =  new PDO("mysql:host=$this->host;dbname=$this->database",$this->username,$this->password);
+            $this->dbh = new PDO("mysql:host=$this->host;dbname=$this->database",$this->username,$this->password);
         }
         catch (PDOException $pe) {
             die("Couldn't connect to db" . $pe->getMessage());
@@ -26,9 +26,6 @@ class Connection
         if(self::$instance == null) {
             self::$instance = new Connection();
         }
-        
         return self::$instance;
     }
 }
-
-

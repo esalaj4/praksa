@@ -11,5 +11,8 @@
             "email": "enasalaj@gmail.com"
         }
     ],
-    "require": {}
+    "require": {
+        "nesbot/carbon": "^2.16",
+        "twig/twig": "^3.4"
+    }
 }

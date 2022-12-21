@@ -12,22 +12,12 @@ use Carbon\Traits\ToStringFormat;
 abstract class Model 
 {
     use timestamps;
-
-    public Router $router;
-    public Request $request;
-    public Response $response;
     public static Model $model;
-    public static string $ROOT_DIR;
     public array $attributes = [];
-    protected array $allowed = [ ];
+    protected array $allowed = [];
     private $id;
     protected $table;
     private $connection;
-
-
-    public function run() {
-        echo $this->router->resolve();
-    }
 
     public function getId()
     {
@@ -41,7 +31,7 @@ abstract class Model
 
     protected function hydrate($data)
     {
-        $model = new static(self::$ROOT_DIR);
+        $model = new static;
         $values = array_values($data); 
         $arr_length = count($values);
         $id = $data['id'];
@@ -59,7 +49,6 @@ abstract class Model
         }
         return $model;
     }
-
 
     public function __set($name, $value) 
     {
@@ -162,7 +151,7 @@ abstract class Model
     {
         try { 
             $connection = Connection::getInstance();
-            $self = new static(self::$ROOT_DIR);
+            $self = new static;
             $table = $self->table;
             $values = implode(",",$self->allowed);
             $query = "SELECT $values,id FROM $table WHERE id = :id AND deleted_at IS NULL";

@@ -2,78 +2,39 @@
 
 namespace App\Src;
 
+use App\Src\Controllers\ModelController;
+
 class Router
 {
-    protected array $routes = [];
-
-    public Response $response;
-    public Request $request;
-
-    public function __construct(Request $request, Response $response)
+    protected static array $routes = [];
+    public static string $ROOT_DIR;
+    public static function get(string $path, $callback) 
     {
-        $this->request = $request;
-        $this->response = $response;
+        self::$routes['get'][$path] = $callback; 
+    }
+    public static function post(string $path, $callback) 
+    {
+        self::$routes['post'][$path] = $callback;
     }
 
-    public function get($path, $callback) 
+    public function __construct($path)
     {
-        $this->routes['get'][$path] = $callback;
+        self::$ROOT_DIR = $path;
     }
 
-    public function post($path, $callback) 
+    public function resolve($request)
     {
-        $this->routes['post'][$path] = $callback;
-    }
-
-    public function resolve()
-    {
-        $path = $this->request->getPath(); //uzme put prije upitnika
-        $method = $this->request->getMethod(); ///get ili post npr
-        $callback = $this->routes[$method][$path] ?? false;
-        if($callback === false) {
-            $this->response->setStatusCode(404);
-            return $this->renderView("_404");
-        }
-
-        if(is_string($callback)){
-            return $this->renderView($callback);
+        $path = Request::getPath(); 
+        $method = Request::getMethod();
+        $callback = self::$routes[$method][$path] ?? false;
+        if(($callback === false) || (is_string($callback))) {
+            ModelController::resolveView($callback);
+            exit;
         }
 
         if(is_array($callback))  {
             $callback[0] = new $callback[0]();
         }
-        return call_user_func($callback); 
-    }
-    
-    public function renderView($view, $params = []) 
-    {
-        $layoutContent = $this->layoutContent();
-        $viewContent = $this->renderOnlyView($view, $params);
-        return str_replace('{{content}}', $viewContent, $layoutContent);  
-        
-    }
-
-    public function renderContent($viewContent) 
-    {
-        $layoutContent = $this->layoutContent();
-        return str_replace('{{content}}', $viewContent, $layoutContent);  
-        
-    }
-
-    protected function layoutContent() 
-    {
-        ob_start();
-        include_once Model::$ROOT_DIR. "/Factory/views/layouts/main.php";
-        return ob_get_clean();
-    } 
-
-    protected function renderOnlyView($view, $params)
-    {
-        foreach($params as $key => $value) {
-            $$key = $value;
-        }
-        ob_start();
-        include_once Model::$ROOT_DIR. "/Factory/views/$view.php";
-        return ob_get_clean();
+        echo call_user_func($callback); 
     }
 }  

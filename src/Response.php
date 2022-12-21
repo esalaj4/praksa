@@ -4,7 +4,7 @@ namespace App\Src;
 
 class Response
 {
-    public function setStatusCode(int $code)
+    public static function setStatusCode(int $code)
     {
         http_response_code($code);
     }
