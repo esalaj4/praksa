@@ -9,7 +9,5 @@ class User extends Model{
         $this->table='users';
         $this->allowed=['name','surname'];
         self::$model = $this;
-        $this->request = new Request();
-        $this->response = new Response();
     } 
 }
